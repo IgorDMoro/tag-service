@@ -14,48 +14,59 @@ import java.util.stream.Collectors;
 @Service
 public class TagService {
 
+    // CORREÇÃO: Injeção de dependência via construtor (melhor prática)
+    private final TagRepository tagRepository;
+
     @Autowired
-    private TagRepository tagRepository;
+    public TagService(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
     @Transactional
     public TagResponse createTag(TagRequest tagRequest) {
-        // ### CORREÇÃO AQUI ###
-        // Criamos a entidade Tag passando null para o ID, pois ele será gerado pelo banco,
-        // e o nome vindo da requisição. Isso garante que estamos usando o construtor correto.
-        Tag tag = new Tag(null, tagRequest.name());
+        Tag tag = new Tag();
+        tag.setName(tagRequest.getName());
 
         Tag savedTag = tagRepository.save(tag);
-        return new TagResponse(savedTag.getId(), savedTag.getName());
+        return convertToResponse(savedTag);
     }
 
     @Transactional(readOnly = true)
     public List<TagResponse> getAllTags() {
         return tagRepository.findAll().stream()
-                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
+                .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public TagResponse getTagById(Long id) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag not found with id: " + id));
-        return new TagResponse(tag.getId(), tag.getName());
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada com o id: " + id));
+        return convertToResponse(tag);
     }
 
     @Transactional
     public TagResponse updateTag(Long id, TagRequest tagRequest) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag not found with id: " + id));
-        tag.setName(tagRequest.name());
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada com o id: " + id));
+
+        tag.setName(tagRequest.getName());
+
         Tag updatedTag = tagRepository.save(tag);
-        return new TagResponse(updatedTag.getId(), updatedTag.getName());
+        return convertToResponse(updatedTag);
     }
 
     @Transactional
     public void deleteTag(Long id) {
         if (!tagRepository.existsById(id)) {
-            throw new RuntimeException("Tag not found with id: " + id);
+            throw new RuntimeException("Tag não encontrada com o id: " + id);
         }
         tagRepository.deleteById(id);
+    }
+
+    // Método auxiliar para converter a entidade Tag para o DTO de resposta
+    private TagResponse convertToResponse(Tag tag) {
+        // CORREÇÃO: Usa o construtor que aceita argumentos, como esperado pela sua classe TagResponse.
+        return new TagResponse(tag.getId(), tag.getName());
     }
 }
