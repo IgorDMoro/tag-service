@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Habilita o uso de @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -34,9 +34,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Permite a requisição pre-flight OPTIONS do CORS sem autenticação
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // <<-- CORREÇÃO CRÍTICA: Permite requisições GET para /tags/** sem autenticação
-                        .requestMatchers(HttpMethod.GET, "/tags/**").permitAll() // <<< ADICIONADO/REVISADO
-                        // Exige autenticação para todas as outras requisições
+                        // Permite GET para /tags/** para todos autenticados (PROFESSOR e ALUNO)
+                        .requestMatchers(HttpMethod.GET, "/tags/**").authenticated() // Qualquer usuário autenticado
+                        // Permite POST, PUT, DELETE para /tags/** apenas para PROFESSOR
+                        .requestMatchers(HttpMethod.POST, "/tags/**").hasRole("PROFESSOR")
+                        .requestMatchers(HttpMethod.PUT, "/tags/**").hasRole("PROFESSOR")
+                        .requestMatchers(HttpMethod.DELETE, "/tags/**").hasRole("PROFESSOR")
+                        // Exige autenticação para todas as outras requisições (caso haja outras que não /tags)
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
