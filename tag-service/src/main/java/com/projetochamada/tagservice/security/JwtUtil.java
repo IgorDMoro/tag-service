@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.io.Decoders;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class JwtUtil {
     private String secret;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret); // CORREÇÃO AQUI
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

@@ -2,7 +2,7 @@ package com.projetochamada.tagservice.service;
 
 import com.projetochamada.tagservice.dto.TagRequest;
 import com.projetochamada.tagservice.dto.TagResponse;
-import com.projetochamada.tagservice.model.Tag; // Certifique-se de que Tag.java tem o campo 'color'
+import com.projetochamada.tagservice.model.Tag;
 import com.projetochamada.tagservice.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,15 +23,9 @@ public class TagService {
 
     @Transactional
     public TagResponse createTag(TagRequest tagRequest) {
-        // Você pode adicionar uma validação aqui para nome duplicado se quiser,
-        // mas a anotação unique = true na entidade Tag já garante isso no BD.
-        // if (tagRepository.findByName(tagRequest.getName()).isPresent()) {
-        //    throw new RuntimeException("Já existe uma tag com este nome: " + tagRequest.getName());
-        // }
-
         Tag tag = new Tag();
         tag.setName(tagRequest.getName());
-        tag.setColor(tagRequest.getColor()); // Define a cor da tag
+        tag.setColor(tagRequest.getColor());
 
         Tag savedTag = tagRepository.save(tag);
         return convertToResponse(savedTag);
@@ -57,7 +51,7 @@ public class TagService {
                 .orElseThrow(() -> new RuntimeException("Tag não encontrada com o id: " + id)); //
 
         tag.setName(tagRequest.getName());
-        tag.setColor(tagRequest.getColor()); // Atualiza a cor da tag
+        tag.setColor(tagRequest.getColor());
 
         Tag updatedTag = tagRepository.save(tag);
         return convertToResponse(updatedTag);
@@ -66,14 +60,13 @@ public class TagService {
     @Transactional
     public void deleteTag(Long id) {
         if (!tagRepository.existsById(id)) {
-            throw new RuntimeException("Tag não encontrada com o id: " + id); //
+            throw new RuntimeException("Tag não encontrada com o id: " + id);
         }
         tagRepository.deleteById(id);
     }
 
     // Método auxiliar para converter a entidade Tag para o DTO de resposta
     private TagResponse convertToResponse(Tag tag) {
-        // CORREÇÃO: Passa todos os três argumentos para o construtor do TagResponse record.
         return new TagResponse(tag.getId(), tag.getName(), tag.getColor());
     }
 }

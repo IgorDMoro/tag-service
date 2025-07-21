@@ -19,6 +19,6 @@ public class Tag {
     @Column(nullable = false, unique = true, length = 10)
     private String name;
 
-    @Column(length = 7) // Adicionado o campo color aqui. Length 7 para código HEX #RRGGBB
+    @Column(length = 7)
     private String color;
 }

@@ -32,15 +32,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite a requisição pre-flight OPTIONS do CORS sem autenticação
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Permite GET para /tags/** para todos autenticados (PROFESSOR e ALUNO)
-                        .requestMatchers(HttpMethod.GET, "/tags/**").authenticated() // Qualquer usuário autenticado
+                        .requestMatchers(HttpMethod.GET, "/tags/**").authenticated()
                         // Permite POST, PUT, DELETE para /tags/** apenas para PROFESSOR
                         .requestMatchers(HttpMethod.POST, "/tags/**").hasRole("PROFESSOR")
                         .requestMatchers(HttpMethod.PUT, "/tags/**").hasRole("PROFESSOR")
                         .requestMatchers(HttpMethod.DELETE, "/tags/**").hasRole("PROFESSOR")
-                        // Exige autenticação para todas as outras requisições (caso haja outras que não /tags)
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

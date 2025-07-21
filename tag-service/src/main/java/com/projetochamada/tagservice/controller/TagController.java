@@ -34,9 +34,6 @@ public class TagController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TagResponse> getTagById(@PathVariable Long id) {
-        // CORREÇÃO: Chamada direta ao serviço.
-        // O seu TagService é responsável por encontrar a tag ou lançar uma exceção
-        // (que será tratada para retornar um erro 404, por exemplo).
         TagResponse tag = tagService.getTagById(id);
         return ResponseEntity.ok(tag);
     }
@@ -44,7 +41,6 @@ public class TagController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<TagResponse> updateTag(@PathVariable Long id, @Valid @RequestBody TagRequest tagRequest) {
-        // CORREÇÃO: Chamada direta ao serviço.
         TagResponse updatedTag = tagService.updateTag(id, tagRequest);
         return ResponseEntity.ok(updatedTag);
     }
