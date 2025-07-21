@@ -1,3 +1,3 @@
 package com.projetochamada.tagservice.dto;
 
-public record TagResponse(Long id, String name) {}
+public record TagResponse(Long id, String name, String color) {}

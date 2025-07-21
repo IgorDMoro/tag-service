@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Permite a requisição pre-flight OPTIONS do CORS sem autenticação
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // <<-- CORREÇÃO CRÍTICA: Permite requisições GET para /tags/** sem autenticação
+                        .requestMatchers(HttpMethod.GET, "/tags/**").permitAll() // <<< ADICIONADO/REVISADO
                         // Exige autenticação para todas as outras requisições
                         .anyRequest().authenticated()
                 )
